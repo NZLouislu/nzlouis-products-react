@@ -1,4 +1,4 @@
-  
+﻿  
   let NZD = '1';
   let USD = '0.76';
   let Euro = '0.67';

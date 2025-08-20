@@ -10,99 +10,83 @@ const title = 'Catalog Viewer'
 
 function CatalogViewer() {
   const catalogsList = [
-    {
-      thumb: image1,
-      image: image1
-    },
-    {
-      thumb: image2,
-      image: image2
-    },
-    {
-      thumb: image3,
-      image: image3
-    },
-    {
-      thumb: image4,
-      image: image4
-    }
+    { thumb: image1, image: image1 },
+    { thumb: image2, image: image2 },
+    { thumb: image3, image: image3 },
+    { thumb: image4, image: image4 }
   ]
 
   const [ catalogs ] = useState([...catalogsList])
   const [ activeIndex, setActiveIndex ] = useState(0)
-  const [ slideTimer, setSlideTimer ] = useState(null)
+  const [ slideTimer, setSlideTimer ] = useState(false)
   const [ slideDuration ] = useState(3000)
 
   useEffect(() => {
-    if(slideTimer !== null){
-      setInterval(
-        () => {
-          handelNextSlide();
-        },
-        slideDuration
-      );
+    let timerId;
+    if (slideTimer) {
+      timerId = setInterval(() => {
+        setActiveIndex((prevIndex) => (prevIndex + 1) % catalogs.length);
+      }, slideDuration);
     }
-  }, [slideTimer, slideDuration]);
+    return () => clearInterval(timerId);
+  }, [slideTimer, slideDuration, catalogs.length]); 
 
-  const handelClickImage = (event) => {
-    console.log(event.target.value);
-    setActiveIndex(event.target.value);
+  const handelClickImage = (index) => {
+    setActiveIndex(index);
   }
 
   const handelPreviousSlide = () =>{
-    let index = Number(activeIndex - 1);
-    if(index < 0)
-       index = 3;
+    let index = activeIndex - 1;
+    if(index < 0) index = catalogs.length - 1;
     setActiveIndex(index);
   }
 
   const handelNextSlide = () => {
-    let index = Number(activeIndex + 1);
-    if(index  >= 4){
-      index = 0;
-    }
+    let index = activeIndex + 1;
+    if(index >= catalogs.length) index = 0;
     setActiveIndex(index);
   }
 
-
   const handelSlideTimer = (event) => {
-    if(event.target.value){
-      setSlideTimer(1);
-    }
+    setSlideTimer(event.target.checked);
   }
 
   return (
     <Fragment>
       <div>
-          <Breadcrumb>
-            <Breadcrumb.Item active>Catalog Viewer</Breadcrumb.Item>
-          </Breadcrumb>
+        <Breadcrumb>
+          <Breadcrumb.Item active>Catalog Viewer</Breadcrumb.Item>
+        </Breadcrumb>
       </div>
       <h8k-navbar header={ title }></h8k-navbar>
-      <div className='layout-column justify-content-center mt-75'>
+      <div className='layout-column justify-content-center mt-15'>
         <div className='layout-row justify-content-center'>
           <div className='card pt-25'>
-            <Viewer catalogImage={ catalogs[activeIndex].image }
-             onClick={handelClickImage}/>
+            <Viewer 
+              catalogImage={ catalogs[activeIndex].image }
+              onClick={() => {}}
+              data-testid="catalog-view"
+            />
             <div className='layout-row justify-content-center align-items-center mt-20'>
-            <button 
-              className="icon-only outlined"
-              data-testid="prev-slide-btn"
-              onClick={handelPreviousSlide}
-            >
-              <i className="material-icons">arrow_back</i>
-            </button>
+              <button 
+                className="icon-only outlined"
+                data-testid="prev-slide-btn"
+                onClick={handelPreviousSlide}
+              >
+                <i className="material-icons">arrow_back</i>
+              </button>
               <Thumbs 
                 items={ catalogs } 
-                currentIndex={ activeIndex } 
+                currentIndex={ activeIndex }
+                onThumbClick={handelClickImage}
               />
-            <button 
-              className="icon-only outlined"
-              data-testid="next-slide-btn"
-              onClick={handelNextSlide}
-            >
-              <i className="material-icons">arrow_forward</i>
-            </button>
+              <button 
+                className="icon-only outlined"
+                data-testid="next-slide-btn"
+                onClick={handelNextSlide}
+              >
+                <i className="material-icons">arrow_forward</i>
+              </button>
             </div>
           </div>
         </div>
@@ -120,6 +104,7 @@ function CatalogViewer() {
 }
 
 export default CatalogViewer
+
 
 /***
  * 

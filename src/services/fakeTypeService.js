@@ -1,4 +1,4 @@
-export const types = [
+﻿export const types = [
     {
       id: 1,
       name: "Lawnmower"
